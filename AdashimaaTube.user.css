@@ -5,7 +5,7 @@
 @namespace      https://userstyles.world/style/24947/fixyt
 @homepageURL    https://github.com/LordOfNightmares/FixYTube
 @supportURL     https://github.com/LordOfNightmares/FixYTube/issues
-@version        2.5.2
+@version        2.5.3
 @license        MIT
 @preprocessor   stylus
 
@@ -13,15 +13,15 @@
 @var range borderRadius                "  ⚙️ Border Radius" [0, 0, 40, 1, 'px']
 @var range buttonRadius                "  ⚙️ Buttons Radius" [2, 0, 18, 1, 'px']
 @var range profileRadius               "  ⚙️ Profiles Radius" [50, 0, 50, 1, '%']
-@var checkbox oldWatchpage             "  📺 Old Watchpage" 1
-@var checkbox oldBackground            "  🖼️ Old Background" 1
-@var checkbox oldPlaylists             "  ▶️ Old Playlist" 1
-@var checkbox playlistOverlay          "  ▶️ Old Playlist Overlay" 1
-@var checkbox oldIcons                 "  🧓 Old Icons" 0
+@var checkbox oldWatchpage             "  📺 Old Watchpage" 0
+@var checkbox oldBackground            "  🖼️ Old Background" 0
+@var checkbox oldPlaylists             "  ▶️ Old Playlist" 0
+@var checkbox playlistOverlay          "  ▶️ Old Playlist Overlay" 0
+@var checkbox oldIcons                 "  🧓 Old Icons" 1
 @var checkbox oldSearchBox             "  🔎 Old Search box" 0
 
 @var select customMoreVideos           "⚒️ Video Appearance" ["Enabled", "Disabled"]
-@var range videoPerRow                 "  ⚙️ Videos Per Rows" [6, 1, 15, 1]
+@var range videoPerRow                 "  ⚙️ Videos Per Rows" [5, 1, 15, 1]
 @var range shortsPerRow                "  🩳 Shorts Per Row" [12, 1, 12, 1]
 @var checkbox hideProfile              "  🫣 Hide Channel Profile" 1
 
@@ -29,7 +29,7 @@
 @var checkbox channelSearchResults     "    ↳ Search Result Grid " 1
 @var checkbox channelNoLimitWidth      "    ↳ No Limit Width" 0
 
-@var select searchPage                 "  🔎 Search Page" ["Disabled", "Enabled", "Auto"]
+@var select searchPage                 "  🔎 Search Page" ["Enabled", "Auto", "Disabled"]
 @var checkbox channelGrouping          "    ↳ Channel Grouping" 0
 @var checkbox hideChannel              "    ↳ Hide Channel" 0
 @var checkbox hideRightSidebar         "    ↳ Hide Right Sidebar" 0
@@ -67,7 +67,7 @@
 @var checkbox descriptionExpanded      "  📭 Description Expanded" 0
 @var checkbox hideTabs                 "  ❌ Hide Tabs" 0
 @var checkbox antiShorts               "  ❌ Hide Shorts" 1
-@var checkbox disableShorts            "  ❌ Disable Shorts" 1
+@var checkbox disableShorts            "  ❌ Disable Shorts" 0
 @var checkbox hideAnnotation           "  ❌ Hide Annotations" 0
 @var checkbox hideRecommendPL          "  ❌ Hide Recommended" 0
 @var checkbox hidecommuPosts           "  ❌ Hide Community Posts" 0
@@ -1412,7 +1412,6 @@
         }
         /* ❌ Disable-Shorts */
             if (disableShorts) {
-               antiShorts=1
                #endpoint.yt-simple-endpoint.ytd-guide-entry-renderer,
                 ytd-mini-guide-entry-renderer a.ytd-mini-guide-entry-renderer{
                     &[title="Shorts"] {
@@ -1425,23 +1424,31 @@
                 ytd-watch-flexy #contents.ytd-item-section-renderer > ytd-reel-shelf-renderer.ytd-item-section-renderer {
                     display: none;
                 }
+                /* https://www.youtube.com/@MrBeast2/shorts */
+                ytd-rich-grid-renderer[is-shorts-grid] {
+                    display: none;
+                }
+                 ytd-rich-shelf-renderer[is-shorts] {
+                    display: none;
+                }
+                /* Trending */
+                [page-subtype="trending"] ytd-video-renderer:has(#dismissible.ytd-video-renderer > ytd-thumbnail a#thumbnail[href^="/shorts/"]) {
+                        display: none i;
+                }
+                /* FireFox users  */
+                #contents > ytd-rich-item-renderer:has(a[href^="/shorts/"]) {
+                        display: none i;
+                }
+                ytd-rich-item-renderer {
+                &:has(a[href^="/shorts/"]) {
+                            display: none i;
+                        }
+                }
+
             }
         /* ❌ Anti-Shorts */
         if (antiShorts) {
-            
 
-            ytd-rich-shelf-renderer[is-shorts] {
-                display: none;
-            }
-             /* https://www.youtube.com/@MrBeast2/shorts */
-            ytd-rich-grid-renderer[is-shorts-grid] {
-                display: none;
-            }
-            /* Trending */
-            [page-subtype="trending"] ytd-video-renderer:has(#dismissible.ytd-video-renderer > ytd-thumbnail a#thumbnail[href^="/shorts/"]) {
-                display: none i;
-            }
-             
             /*Don't display shorts in search */
             grid-shelf-view-model.ytd-item-section-renderer {
                 display:none;
@@ -1451,17 +1458,13 @@
             ytd-video-renderer[is-search],
             ytd-compact-video-renderer,
             ytd-reel-item-renderer,
-            ytd-grid-video-renderer,
-            ytd-rich-item-renderer {
+            ytd-grid-video-renderer {
                 &:has(a[href^="/shorts/"]) {
                     display: none i;
                 }
             }
 
-            /* FireFox users  */
-            #contents > ytd-rich-item-renderer:has(a[href^="/shorts/"]) {
-                display: none i;
-            }
+    
 
            
             
