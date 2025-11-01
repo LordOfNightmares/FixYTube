@@ -1,12 +1,11 @@
 /* ==UserStyle==
-@name           `AdashimaaTube
+@name           FixYTube
 @author         sapondanaisriwan <sapondanaisriwan@gmail.com> (https://github.com/sapondanaisriwan)
-@description    If you want to submit a bug or request a feature please report via github issue. Since I receive so many emails, I can't reply to them all.
+@description    `AdashimaaTube remake If you want to submit a bug report/fix via github issue.
 @namespace      https://userstyles.world/user/sapondanaisriwan
-@homepageURL    https://github.com/sapondanaisriwan/AdashimaaTube
-@supportURL     https://github.com/sapondanaisriwan/AdashimaaTube/issues
-@updateURL      https://userstyles.world/api/style/6944.user.css
-@version        2.4.6
+@homepageURL    https://github.com/LordOfNightmares/FixYTube
+@supportURL     https://github.com/LordOfNightmares/FixYTube/issues
+@version        2.5.2
 @license        MIT
 @preprocessor   stylus
 
@@ -67,7 +66,8 @@
 }
 @var checkbox descriptionExpanded      "  📭 Description Expanded" 0
 @var checkbox hideTabs                 "  ❌ Hide Tabs" 0
-@var checkbox antiShorts               "  ❌ Hide Shorts" 0
+@var checkbox antiShorts               "  ❌ Hide Shorts" 1
+@var checkbox disableShorts            "  ❌ Disable Shorts" 1
 @var checkbox hideAnnotation           "  ❌ Hide Annotations" 0
 @var checkbox hideRecommendPL          "  ❌ Hide Recommended" 0
 @var checkbox hidecommuPosts           "  ❌ Hide Community Posts" 0
@@ -89,15 +89,6 @@
 @var checkbox musicSection             "  🎵 Hide Music Section" 0
 @var checkbox chapterSection           "  ❌ Hide Chapters Section" 0
 ==/UserStyle== */
-/*
-Please report bugs via my email, github issue and discord(If I have some free time, I'll fix them)
-Contact: sapondanaisriwan@gmail.com
-Support me: https://ko-fi.com/sapondanaisriwan 
-Support me: https://ko-fi.com/sapondanaisriwan
-Support me: https://ko-fi.com/sapondanaisriwan
-Support me: https://ko-fi.com/sapondanaisriwan
-Support me: https://ko-fi.com/sapondanaisriwan
-*/
 @-moz-document regexp("^https:\\/\\/www\\.youtube\\.com.+") {
 
     :root {
@@ -558,7 +549,7 @@ Support me: https://ko-fi.com/sapondanaisriwan
                 #header.ytd-search,
                 ytd-two-column-search-results-renderer.ytd-search,
                 #primary.ytd-two-column-search-results-renderer {
-                    max-width: 100% if searchPageNoLimitWidth;
+                    max-width: 100% i if searchPageNoLimitWidth;
                 }
                 
                 \ytd-channel-renderer {
@@ -1419,9 +1410,42 @@ Support me: https://ko-fi.com/sapondanaisriwan
         .annotation {
             display: none if hideAnnotation;
         }
-
+        /* ❌ Disable-Shorts */
+            if (disableShorts) {
+               antiShorts=1
+               #endpoint.yt-simple-endpoint.ytd-guide-entry-renderer,
+                ytd-mini-guide-entry-renderer a.ytd-mini-guide-entry-renderer{
+                    &[title="Shorts"] {
+                        display: none;
+                    }
+                }
+                ytd-shorts {
+                    display: none;
+                }
+                ytd-watch-flexy #contents.ytd-item-section-renderer > ytd-reel-shelf-renderer.ytd-item-section-renderer {
+                    display: none;
+                }
+            }
         /* ❌ Anti-Shorts */
         if (antiShorts) {
+            
+
+            ytd-rich-shelf-renderer[is-shorts] {
+                display: none;
+            }
+             /* https://www.youtube.com/@MrBeast2/shorts */
+            ytd-rich-grid-renderer[is-shorts-grid] {
+                display: none;
+            }
+            /* Trending */
+            [page-subtype="trending"] ytd-video-renderer:has(#dismissible.ytd-video-renderer > ytd-thumbnail a#thumbnail[href^="/shorts/"]) {
+                display: none i;
+            }
+             
+            /*Don't display shorts in search */
+            grid-shelf-view-model.ytd-item-section-renderer {
+                display:none;
+            }
             /* These rules won't be applied in browsers that don't support :has() */
             /* https://www.youtube.com/results?search_query=shorts */
             ytd-video-renderer[is-search],
@@ -1439,15 +1463,10 @@ Support me: https://ko-fi.com/sapondanaisriwan
                 display: none i;
             }
 
-            ytd-watch-flexy #contents.ytd-item-section-renderer > ytd-reel-shelf-renderer.ytd-item-section-renderer {
-                display: none;
-            }
+           
             
-            /* https://www.youtube.com/@MrBeast2/shorts */
-            ytd-rich-grid-renderer[is-shorts-grid] {
-                display: none;
-            }
-
+           
+        
             /* https://www.youtube.com/@MrBeast2/featured */
             #contents > ytd-item-section-renderer > #contents ytd-reel-shelf-renderer:has(yt-horizontal-list-renderer > #scroll-container > #items > ytd-reel-item-renderer #dismissible > ytd-thumbnail > a#thumbnail[href^="/shorts/"]) {
                 display: none;
@@ -1457,12 +1476,6 @@ Support me: https://ko-fi.com/sapondanaisriwan
                 display: none;
             }
 
-            #endpoint.yt-simple-endpoint.ytd-guide-entry-renderer,
-            ytd-mini-guide-entry-renderer a.ytd-mini-guide-entry-renderer{
-                &[title="Shorts"] {
-                    display: none;
-                }
-            }
 
             /* https://www.youtube.com/hashtag/shorts */
             [page-subtype="hashtag-landing-page"] {
@@ -1478,23 +1491,7 @@ Support me: https://ko-fi.com/sapondanaisriwan
                 }
             }
 
-            ytd-shorts {
-                display: none;
-            }
-
-            ytd-rich-shelf-renderer[is-shorts] {
-                display: none;
-            }
             
-            /* https://www.youtube.com/feed/subscriptions?flow=2 */
-            ytd-two-column-browse-results-renderer[page-subtype="subscriptions"] > #primary.ytd-two-column-browse-results-renderer > ytd-section-list-renderer[page-subtype="subscriptions"] > #contents.ytd-section-list-renderer > ytd-item-section-renderer.ytd-section-list-renderer:has(#contents.ytd-item-section-renderer > ytd-shelf-renderer.ytd-item-section-renderer > #dismissible.ytd-shelf-renderer > #contents.ytd-shelf-renderer > ytd-expanded-shelf-contents-renderer.ytd-shelf-renderer > #grid-container.ytd-expanded-shelf-contents-renderer > ytd-video-renderer > #dismissible > ytd-thumbnail > a#thumbnail[href^="/shorts/"]) {
-                display: none;
-            }
-
-            /* Trending */
-            [page-subtype="trending"] ytd-video-renderer:has(#dismissible.ytd-video-renderer > ytd-thumbnail a#thumbnail[href^="/shorts/"]) {
-                display: none i;
-            }
         }
 
         /* ❌ Remove Tabs */
@@ -1822,6 +1819,10 @@ Support me: https://ko-fi.com/sapondanaisriwan
             display: none i;
         } */
 
+        #bottom-row.ytd-watch-metadata {
+            display: none i;
+        }
+        
         #meta-contents[hidden],
         #info-contents[hidden] {
             display: block i;
@@ -1881,9 +1882,9 @@ Support me: https://ko-fi.com/sapondanaisriwan
             position: relative;
         }
         
-        #owner.ytd-watch-metadata {
+/*         #owner.ytd-watch-metadata {
             min-width: unset;
-        }
+        } */
         
         ytd-video-primary-info-renderer {
             padding: 0 i;
@@ -2466,10 +2467,11 @@ Support me: https://ko-fi.com/sapondanaisriwan
         ytd-video-preview:not([has-endorsement]) #inline-preview-player.ytp-rounded-inline-preview .html5-main-video,
 
         /* Removes border from miniplayer */
+        ytd-miniplayer,
         ytd-miniplayer[rounded-container] #player-container.ytd-miniplayer,
         ytd-miniplayer[rounded-container] #video-container.ytd-miniplayer .video.ytd-miniplayer,
         ytd-miniplayer[rounded-container] #card.ytd-miniplayer,
-        ytd-miniplayer[rounded-container], // #show-hide-button > ytd-toggle-button-renderer > yt-button-shape > button > yt-touch-feedback-shape > div > div.yt-spec-touch-feedback-shape__fill
+        ytd-miniplayer[rounded-container],
         /* Removes border around Live chat */
         ytd-live-chat-frame[rounded-container],
         ytd-live-chat-frame[rounded-container] #show-hide-button.ytd-live-chat-frame ytd-toggle-button-renderer.ytd-live-chat-frame,
